@@ -232,4 +232,71 @@ void q_reverse(struct list_head *head)
  * No effect if q is NULL or empty. In addition, if q has only one
  * element, do nothing.
  */
-void q_sort(struct list_head *head) {}
+void myInsert(struct list_head *pt, struct list_head *node);
+
+void merge(struct list_head *lptr,
+           struct list_head *rptr,
+           int size,
+           struct list_head *head);
+
+void q_sort(struct list_head *head)
+{
+    if (!head)
+        return;
+    int size = q_size(head);
+    for (int i = 1; i < size; i *= 2) {
+        int l = 2 * i, r = i, cnt = 0;
+        struct list_head *lptr = head->next, *rptr = NULL, *node;
+        list_for_each (node, head) {
+            if (cnt == r)
+                rptr = node;
+            if (cnt == l) {
+                l += 2 * i;
+                r += 2 * i;
+                merge(lptr, rptr, i, head);
+                lptr = node;
+                rptr = NULL;
+            }
+            cnt++;
+        }
+        if (lptr && rptr)
+            merge(lptr, rptr, i, head);
+    }
+}
+
+/*
+ * Insert @node before @pt.
+ * Both of its value should not be NULL.
+ */
+void myInsert(struct list_head *pt, struct list_head *node)
+{
+    node->next = pt;
+    node->prev = pt->prev;
+    node->prev->next = node;
+    pt->prev = node;
+}
+
+/*
+ * Insert @node after @pt.
+ * Both of its value should not be NULL.
+ */
+void merge(struct list_head *lptr,
+           struct list_head *rptr,
+           int size,
+           struct list_head *head)
+{
+    int lcnt = 0, rcnt = 0;
+    while (lcnt < size && rcnt < size && rptr != head) {
+        if (strcmp(list_entry(lptr, element_t, list)->value,
+                   list_entry(rptr, element_t, list)->value) > 0) {
+            struct list_head *tmp = rptr->next;
+            list_del(rptr);
+            myInsert(lptr, rptr);
+            rptr = tmp;
+            rcnt++;
+        } else {
+            lptr = lptr->next;
+            lcnt++;
+        }
+    }
+}
