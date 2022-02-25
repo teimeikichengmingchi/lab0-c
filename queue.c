@@ -277,8 +277,10 @@ void myInsert(struct list_head *pt, struct list_head *node)
 }
 
 /*
- * Insert @node after @pt.
- * Both of its value should not be NULL.
+ * Merge two successive segment on linked list.
+ * @lptr indicates the starting point of first segment and @rptr
+ * indicates that of secend segment.
+ * @size indicate length of each segment.
  */
 void merge(struct list_head *lptr,
            struct list_head *rptr,
